@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>井字棋游戏</title>
+    <meta name="description" content="我们熟悉的井字棋游戏，你可以选择选后手，率先在横、竖、斜线上连出三个O或X的人即为胜者">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+
+<body>
+    <div class="container" style="width:300px; margin:auto; margin-top:100px; background-color:white">
+        <canvas id="chessboard" width="300" height="300" style="background-color:rgb(220,255,255);">
+        你的浏览器支持HTML5的canvas，请升级你的游览器以使用本功能
+        </canvas>
+    </div>
+    <script type="text/javascript">
+        var canvas = document.getElementById("chessboard");
+        var ctx = canvas.getContext("2d");
+        ctx.font = "50px Verdana";
+        var board = new Array(3);
+        board[0] = new Array(3);
+        board[1] = new Array(3);
+        board[2] = new Array(3);
+        for(var i=0; i<3; i++){
+            for (var j=0; j<3; j++){
+                board[i][j] = 0;
+            }
+        }
+        paint();
+
+        canvas.addEventListener("click", function(e){
+            p = getEventPosition(e);
+            var m = p["x"] / 100;
+            var n = p["y"] / 100;
+            $.ajax({ url: "tictactoe/opponent", data: {"m": m, "n": n}, type: "get", success: function(data){
+                var res = JSON.parse(data);
+                for(var i=0; i<3; i++){
+                    for (var j=0; j<3; j++){
+                        board[i][j] = res[i][j];
+                    }
+                }
+                paint();
+            } });
+            //alert(clicked);
+        }, false);
+
+        //setInterval(paint(), 16);
+
+
+        function paint(){
+            for(var i=0; i<3; i++){
+                for (var j=0; j<3; j++){
+                    //绘制九宫格边框
+                    ctx.beginPath();
+                    ctx.lineWidth = "6";
+                    ctx.strokeStyle = "rgb(200,200,255)";
+                    ctx.rect(i*100, j*100, 100, 100);
+                    ctx.stroke();
+
+                    //填写框内内容
+                    ctx.strokeStyle = "rgb(99,99,99)";
+                    if(board[i][j] == 1){
+                        ctx.strokeText("O", i*100+30, j*100+70);
+                    }
+                    else if (board[i][j] == 2) {
+                        ctx.strokeText("X", i*100+30, j*100+70);
+                    }
+                    ctx.closePath();
+                }
+            }
+        }
+
+        function getEventPosition(ev){
+            var x, y;
+            if(ev.layerX || ev.layerX == 0){
+                x = ev.layerX;
+                y = ev.layerY;
+            }else if(ev.offsetX || ev.offsetX == 0){
+                x = ev.offsetX;
+                y = ev.offsetY;
+            }
+            return {"x": x, "y": y};
+        }
+
+    </script>
+</body>
+
+</html>
