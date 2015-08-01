@@ -32,11 +32,14 @@
             p = getEventPosition(e);
             var m = p["x"] / 100;
             var n = p["y"] / 100;
+            //使用jquery的ajax实现来制定井字棋的点击方案
             $.ajax({ url: "tictactoe/opponent", data: {"m": m, "n": n}, type: "get", success: function(data){
                 var res = JSON.parse(data);
+                var win = res[0];
+                var b = res[1];
                 for(var i=0; i<3; i++){
                     for (var j=0; j<3; j++){
-                        board[i][j] = res[i][j];
+                        board[i][j] = b[i][j];
                     }
                 }
                 paint();
@@ -62,7 +65,7 @@
                     if(board[i][j] == 1){
                         ctx.strokeText("O", i*100+30, j*100+70);
                     }
-                    else if (board[i][j] == 2) {
+                    else if (board[i][j] == -1) {
                         ctx.strokeText("X", i*100+30, j*100+70);
                     }
                     ctx.closePath();
